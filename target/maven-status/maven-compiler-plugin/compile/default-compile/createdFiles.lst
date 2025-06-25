@@ -1,0 +1,14 @@
+com/reporte/reporte/Model/Dto/CursoReporteDto.class
+com/reporte/reporte/Model/Reporte.class
+com/reporte/reporte/Model/Dto/UsuarioReporteDto.class
+com/reporte/reporte/Model/Dto/CursoDto.class
+com/reporte/reporte/ReporteApplication.class
+com/reporte/reporte/Service/ReporteService.class
+com/reporte/reporte/Controller/ReporteController.class
+com/reporte/reporte/Config/AppConfig.class
+com/reporte/reporte/Model/Dto/SoporteReporteDto.class
+com/reporte/reporte/Repository/ReporteRepository.class
+com/reporte/reporte/Model/Entity/ReporteEntity.class
+com/reporte/reporte/Config/SwaggerConfig.class
+com/reporte/reporte/Model/Dto/SoporteDto.class
+com/reporte/reporte/Model/Dto/UsuarioDto.class

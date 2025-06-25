@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.reporte.reporte.ReporteTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.245 s -- in com.reporte.reporte.ReporteTest
