@@ -18,5 +18,6 @@ public interface ReporteRepository extends JpaRepository<ReporteEntity, Integer>
     Boolean existsByReporteId(int reporteId);
     void deleteByReporteId(int reporteId);
     List<ReporteEntity> findAllByRutUsuario(String rutUsuario);
+    List<ReporteEntity> findAllByCursoId(int cursoId);
 
 }

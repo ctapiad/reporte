@@ -12,7 +12,6 @@ import com.reporte.reporte.Model.Reporte;
 import com.reporte.reporte.Model.Dto.CursoDto;
 import com.reporte.reporte.Model.Dto.CursoReporteDto;
 import com.reporte.reporte.Model.Dto.SoporteDto;
-import com.reporte.reporte.Model.Dto.SoporteReporteDto;
 import com.reporte.reporte.Model.Dto.UsuarioDto;
 import com.reporte.reporte.Model.Dto.UsuarioReporteDto;
 import com.reporte.reporte.Model.Entity.ReporteEntity;
@@ -35,63 +34,46 @@ public class ReporteService {
     public List<Reporte> ObtenerTodosLosReportes() {
 
         try{
-
             List<ReporteEntity> listaReporte = (List<ReporteEntity>) reporteRepository.findAll();
-            
-            if(listaReporte.isEmpty()){
-                
+            if(listaReporte.isEmpty()){   
                 throw new IllegalArgumentException("No reportes encontrados");
-
             }
-
             
             List<Reporte> reportes = new ArrayList<>();
             
             for (ReporteEntity reporte : listaReporte) {
-
                 Reporte nuevoReporte = new Reporte();
-
                 nuevoReporte.setRut_usuario(reporte.getRutUsuario());
                 nuevoReporte.setReporteId(reporte.getReporteId());
                 nuevoReporte.setDetalles(reporte.getDetalles());
-
+                nuevoReporte.setCursoId(reporte.getCursoId());
                 reportes.add(nuevoReporte);
-
             }
             return reportes;
 
         }
         catch (IllegalArgumentException e) {
-            
             System.out.println("Error de validación: " + e.getMessage());
             return new ArrayList<>();
-        
         }
-        catch (Exception e) {
-            
+        catch (Exception e) {  
             System.out.println("Error al obtener los soportes: " + e.getMessage());
             return new ArrayList<>();
-
         }
 
 
     }
 
     public Reporte obtenReporte(int reporteId) {
-        
         try{
-
-            if (reporteId <= 0) {
-                
+            if (reporteId <= 0) {              
                 throw new IllegalArgumentException("El ID del curso no puede ser menor o igual a cero");
             }
 
             ReporteEntity reporte = reporteRepository.findByReporteId(reporteId);
             
-            if(reporte == null){
-                
+            if(reporte == null){    
                 throw new IllegalArgumentException("El reporte no existe");
-
             }
 
             Reporte mostrarReporte = new Reporte();
@@ -99,18 +81,14 @@ public class ReporteService {
             mostrarReporte.setRut_usuario(reporte.getRutUsuario());
             mostrarReporte.setReporteId(reporte.getReporteId());
             mostrarReporte.setDetalles(reporte.getDetalles());
-
+            mostrarReporte.setCursoId(reporte.getCursoId());
             return mostrarReporte;
-
         }
-        catch (IllegalArgumentException e) {
-            
+        catch (IllegalArgumentException e) {          
             System.out.println("Error de validación: " + e.getMessage());
-            return null;
-        
+            return null;       
         }
-        catch (Exception e) {
-            
+        catch (Exception e) {    
             System.out.println("Error al obtener el soporte: " + e.getMessage());
             return null;
 
@@ -118,83 +96,71 @@ public class ReporteService {
 
     }
 
-    public String crearReporte(Reporte reporte) {
-        
+    public String crearReporte(Reporte reporte) { 
         try{
-
            Boolean estado = reporteRepository.existsByReporteId(reporte.getReporteId());
            if(estado != true){
                 String usuarioUrl = "http://54.88.178.51:8080/obtenerUsuario/" + reporte.getRut_usuario();
-                
                 UsuarioDto usuario = restTemplate.getForObject(usuarioUrl, UsuarioDto.class);
 
                 if(usuario == null || usuario.getRut() == null ){
-
                     System.out.println("El usuario no fue encontrado");
                     return null;
+                }
 
+                // Validar curso asociado al usuario (solo que exista y que el rut_docente coincida)
+                String cursoUrl = "http://54.88.178.51:8082/cursos/" + reporte.getCursoId();
+                CursoDto curso = restTemplate.getForObject(cursoUrl, CursoDto.class);
+                if (curso == null) {
+                    System.out.println("El curso no fue encontrado");
+                    return null;
+                }
+                if (!curso.getRut_docente().equals(reporte.getRut_usuario())) {
+                    System.out.println("El rut del usuario no corresponde al docente de este curso");
+                    return null;
                 }
 
                 ReporteEntity nuevoReporte = new ReporteEntity();
-                
                 nuevoReporte.setRutUsuario(usuario.getRut());
                 nuevoReporte.setReporteId(reporte.getReporteId());
                 nuevoReporte.setDetalles(reporte.getDetalles());
-
-
+                nuevoReporte.setCursoId(reporte.getCursoId());
                 reporteRepository.save(nuevoReporte);
                 
                 return "Reporte creado correctamente";
             }
-            else{
-                
+            else{   
                 System.out.println("El reporte ya existe");
                 return null;
-
             }
-
         }
-        catch (Exception e) {
-            
+        catch (Exception e) {   
             System.out.println("Error al crear el reporte: " + e.getMessage());
             return null;
-
         }
     }
 
     @Transactional
-    public String eliminarReporte(int reporteId) {
-        
-        try{
-            
+    public String eliminarReporte(int reporteId) {       
+        try{           
             Boolean estado = reporteRepository.existsByReporteId(reporteId);
             if(estado == true){
-
-                reporteRepository.deleteByReporteId(reporteId);
-                
+                reporteRepository.deleteByReporteId(reporteId); 
                 return "Reporte eliminado correctamente";
-
-            }else{
-                
-                System.out.println("El sreporte con el ID ingresado no existe");
+            }else{               
+                System.out.println("El reporte con el ID ingresado no existe");
                 return null;
-
-            }
-            
+            }            
         }
         catch (Exception e) {
-            
-            System.out.println("Error al eliminar el soporte: " + e.getMessage());
+            System.out.println("Error al eliminar el reporte: " + e.getMessage());
             return null;
-
         }
     }
 
     public String modificarReporte(Reporte reporte){
-        try{
-            
-            if(reporteRepository.existsByReporteId(reporte.getReporteId())){
-                
+        try{           
+            if(reporteRepository.existsByReporteId(reporte.getReporteId())){     
                 String usuarioUrl = "http://54.88.178.51:8080/obtenerUsuario/" + reporte.getRut_usuario();
                 UsuarioDto usuario = restTemplate.getForObject(usuarioUrl, UsuarioDto.class);
 
@@ -209,22 +175,22 @@ public class ReporteService {
                     reporteExistente.setRutUsuario(reporte.getRut_usuario());
                     reporteExistente.setReporteId(reporte.getReporteId());
                     reporteExistente.setDetalles(reporte.getDetalles());
-
+                    //reporteExistente.setCursoId(reporte.getCursoId());
                     reporteRepository.save(reporteExistente);
 
                     System.out.println("El soporte ha sido modificado correctamente");
                     return "Modificación exitosa";
                 } else {
                     System.out.println("El soporte no existe");
-                    return "El soporte no existe";
+                    return null;
                 }
             } else {
-                return "El soporte con el ID ingresado no existe";
+                return null;
             }
         }
         catch (Exception e) {
             System.out.println("Error al modificar el soporte: " + e.getMessage());
-            return "Error al modificar el soporte";
+            return null;
         }
     }
 
@@ -248,22 +214,15 @@ public class ReporteService {
     public UsuarioReporteDto obtenerUsuarioYReportePorReporteId(int reporteId) {
         
         Reporte reporte = obtenReporte(reporteId);
-        
         if (reporte == null) {
-        
             return null;
-        
         }
         
         try {
-            
             String usuarioUrl = "http://54.88.178.51:8080/obtenerUsuario/" + reporte.getRut_usuario();
             UsuarioDto usuario = restTemplate.getForObject(usuarioUrl, UsuarioDto.class);
-            
             if (usuario == null) {
-            
                 return null;
-            
             }
             
             System.out.println("ReporteId: " + reporte.getReporteId());
@@ -287,34 +246,26 @@ public class ReporteService {
         try {
             String url = "http://54.88.178.51:8082/cursos";
             CursoDto[] cursoArray = restTemplate.getForObject(url, CursoDto[].class);
-            
-            if (cursoArray != null) {
-                
+            if (cursoArray != null) {   
                 return List.of(cursoArray);
-           
-            } else {
-                
+            } else {  
                 return new ArrayList<>();
-           
             }
-        
         } catch (Exception e) {
-            
             System.out.println("Error al obtener los cursos: " + e.getMessage());
-            
             return new ArrayList<>();
-        
         }
     }
    
 
     public CursoReporteDto obtenerCursoYReportePorReporteId(int reporteId) {
         Reporte reporte = obtenReporte(reporteId);
-        if(reporte == null) {
+        if (reporte == null || reporte.getCursoId() <= 0) {
+            System.out.println("El reporte no tiene un cursoId válido");
             return null;
         }
         try {
-            String cursoUrl = "http://54.88.178.51:8082/cursos/" + reporte.getReporteId();
+            String cursoUrl = "http://54.88.178.51:8082/cursos/" + reporte.getCursoId();
             CursoDto curso = restTemplate.getForObject(cursoUrl, CursoDto.class);
             if (curso == null) {
                 return null;
@@ -326,11 +277,7 @@ public class ReporteService {
         } catch (Exception e) {
             System.out.println("Error al obtener curso y reporte: " + e.getMessage());
             return null;
-
         }
-
-        
-
     }
 
     // Sección para llamar datos de soporte
@@ -382,4 +329,17 @@ public class ReporteService {
     }
 }
     
+    public List<Reporte> obtenerReportesPorCursoId(int cursoId) {
+        List<ReporteEntity> entidades = reporteRepository.findAllByCursoId(cursoId);
+        List<Reporte> reportes = new ArrayList<>();
+        for (ReporteEntity entity : entidades) {
+            Reporte reporte = new Reporte();
+            reporte.setReporteId(entity.getReporteId());
+            reporte.setRut_usuario(entity.getRutUsuario());
+            reporte.setDetalles(entity.getDetalles());
+            reporte.setCursoId(entity.getCursoId());
+            reportes.add(reporte);
+        }
+        return reportes;
+    }
 }

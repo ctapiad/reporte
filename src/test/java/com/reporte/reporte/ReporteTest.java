@@ -43,7 +43,7 @@ public class ReporteTest {
     public void setup(){
 
         MockitoAnnotations.openMocks(this);
-        reporte = new Reporte(1, "13.333.456-1", "Usuario creado");
+        reporte = new Reporte(1, "13.333.456-1", "Usuario creado",1);
         reporteEntity = new ReporteEntity();
         reporteEntity.setReporteId(1);
         reporteEntity.setRutUsuario("13.333.456-1");
@@ -60,6 +60,11 @@ public class ReporteTest {
         UsuarioDto usuarioMock = new UsuarioDto();
         usuarioMock.setRut("13.333.456-1");
         when(restTemplate.getForObject(anyString(), eq(UsuarioDto.class))).thenReturn(usuarioMock);
+
+        
+        com.reporte.reporte.Model.Dto.CursoDto cursoMock = new com.reporte.reporte.Model.Dto.CursoDto();
+        cursoMock.setRut_docente("13.333.456-1"); 
+        when(restTemplate.getForObject(anyString(), eq(com.reporte.reporte.Model.Dto.CursoDto.class))).thenReturn(cursoMock);
 
         String resultado = reporteService.crearReporte(reporte);
         assertEquals("Reporte creado correctamente", resultado);

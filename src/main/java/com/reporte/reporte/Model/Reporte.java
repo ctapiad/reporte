@@ -13,5 +13,6 @@ public class Reporte {
    private int reporteId;
    private String rut_usuario;
    private String detalles;
+   private int cursoId;
 
 }

@@ -21,4 +21,12 @@ public class ReporteEntity {
 
     private String detalles;
     
+    private int cursoId;
+
+    public int getCursoId() {
+        return cursoId;
+    }
+    public void setCursoId(int cursoId) {
+        this.cursoId = cursoId;
+    }
 }
