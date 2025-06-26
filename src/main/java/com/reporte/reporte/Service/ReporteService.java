@@ -108,16 +108,18 @@ public class ReporteService {
                     return null;
                 }
 
-                // Validar curso asociado al usuario (solo que exista y que el rut_docente coincida)
-                String cursoUrl = "http://54.88.178.51:8082/cursos/" + reporte.getCursoId();
-                CursoDto curso = restTemplate.getForObject(cursoUrl, CursoDto.class);
-                if (curso == null) {
-                    System.out.println("El curso no fue encontrado");
-                    return null;
-                }
-                if (!curso.getRut_docente().equals(reporte.getRut_usuario())) {
-                    System.out.println("El rut del usuario no corresponde al docente de este curso");
-                    return null;
+                // Si el cursoId es mayor a 0, validar curso y docente
+                if (reporte.getCursoId() > 0) {
+                    String cursoUrl = "http://54.88.178.51:8082/cursos/" + reporte.getCursoId();
+                    CursoDto curso = restTemplate.getForObject(cursoUrl, CursoDto.class);
+                    if (curso == null) {
+                        System.out.println("El curso no fue encontrado");
+                        return null;
+                    }
+                    if (!curso.getRut_docente().equals(reporte.getRut_usuario())) {
+                        System.out.println("El rut del usuario no corresponde al docente de este curso");
+                        return null;
+                    }
                 }
 
                 ReporteEntity nuevoReporte = new ReporteEntity();
